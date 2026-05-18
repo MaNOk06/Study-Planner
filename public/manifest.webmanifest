@@ -1,0 +1,19 @@
+{
+  "name": "Martha · Academic Planner",
+  "short_name": "Planner",
+  "description": "Personal academic planner for Y2 Semester 2 at Ashesi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAF6EE",
+  "theme_color": "#1E3A5F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
