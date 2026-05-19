@@ -5,7 +5,7 @@ export const COURSES = {
   MS:  { name: 'Material Science',       short: 'MS',  bg: '#6D28D9', light: '#E9D5FF', tint: '#FAF5FF' },
   AP:  { name: 'Applied Programming',    short: 'AP',  bg: '#047857', light: '#A7F3D0', tint: '#ECFDF5' },
   TM:  { name: 'Text & Meaning',         short: 'TM',  bg: '#BE185D', light: '#FBCFE8', tint: '#FDF2F8' },
-  LS2: { name: 'Leadership Seminar 2',   short: 'LS2', bg: '#0F766E', light: '#99F6E4', tint: '#F0FDFA' },
+  LS3: { name: 'Leadership Seminar III', short: 'LS3', bg: '#0F766E', light: '#99F6E4', tint: '#F0FDFA' },
   PERSONAL: { name: 'Personal', short: 'PERSONAL', bg: '#7C2D12', light: '#FED7AA', tint: '#FFF7ED' },
 }
 

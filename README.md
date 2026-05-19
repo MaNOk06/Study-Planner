@@ -64,7 +64,14 @@ vercel
 
 Follow prompts. First deploy creates the project. Subsequent `vercel --prod` ships updates.
 
-**No env keys, no database, no Supabase needed.** Static site, period.
+**For static deploy (no AI parsing):** No env keys needed.
+
+**To enable AI-powered syllabus parsing:** Set the env var `ANTHROPIC_API_KEY` in Vercel:
+1. Sign up at [console.anthropic.com](https://console.anthropic.com), create an API key.
+2. In your Vercel project → Settings → Environment Variables → Add: `ANTHROPIC_API_KEY` = your key. Apply to Production.
+3. Redeploy. Now PDF upload uses Claude to extract tasks accurately (~$0.01 per syllabus).
+
+Without the key, the app falls back to basic pattern matching for PDFs (uglier but still usable). Bulk paste and manual add always work.
 
 ---
 
