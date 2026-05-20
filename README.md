@@ -64,14 +64,67 @@ vercel
 
 Follow prompts. First deploy creates the project. Subsequent `vercel --prod` ships updates.
 
-**For static deploy (no AI parsing):** No env keys needed.
+**For static deploy (no AI parsing, no sync):** No env keys needed.
 
 **To enable AI-powered syllabus parsing:** Set the env var `ANTHROPIC_API_KEY` in Vercel:
 1. Sign up at [console.anthropic.com](https://console.anthropic.com), create an API key.
 2. In your Vercel project → Settings → Environment Variables → Add: `ANTHROPIC_API_KEY` = your key. Apply to Production.
 3. Redeploy. Now PDF upload uses Claude to extract tasks accurately (~$0.01 per syllabus).
 
-Without the key, the app falls back to basic pattern matching for PDFs (uglier but still usable). Bulk paste and manual add always work.
+**To enable cross-device sync (laptop ↔ phone):** Set two Supabase env vars in Vercel. Full setup below.
+
+Without these keys, the app falls back to localStorage-only (single device) and basic pattern matching for PDFs. Bulk paste and manual add always work.
+
+---
+
+## Sync Setup (cross-device, ~10 minutes)
+
+The app uses Supabase as a backend. Free tier is plenty for one person.
+
+### Step 1 — Create a Supabase project
+1. Sign up at [supabase.com](https://supabase.com) (use Google sign-in for speed).
+2. New Project → name it whatever you like (`martha-planner`) → choose a region close to Ghana (Frankfurt or London works) → set a database password (save it somewhere) → Create.
+3. Wait ~2 minutes for it to provision.
+
+### Step 2 — Create the table
+1. In the Supabase dashboard → **SQL Editor** (left sidebar) → **New query**.
+2. Paste this and click **Run**:
+
+```sql
+CREATE TABLE planner_data (
+  sync_code TEXT PRIMARY KEY,
+  items JSONB NOT NULL DEFAULT '[]'::jsonb,
+  prefs JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE planner_data ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all reads"  ON planner_data FOR SELECT USING (true);
+CREATE POLICY "Allow all inserts" ON planner_data FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow all updates" ON planner_data FOR UPDATE USING (true) WITH CHECK (true);
+```
+
+### Step 3 — Grab your keys
+1. In Supabase → **Settings → API** (left sidebar gear icon).
+2. Copy two values:
+   - **Project URL** (looks like `https://abcdefghij.supabase.co`)
+   - **anon public** key (a long JWT string)
+
+### Step 4 — Add them to Vercel
+1. In your Vercel project → **Settings → Environment Variables**.
+2. Add two variables (apply to Production, Preview, and Development):
+   - Name: `VITE_SUPABASE_URL` — Value: your project URL
+   - Name: `VITE_SUPABASE_ANON_KEY` — Value: your anon key
+3. Go to **Deployments** → click the latest → ⋯ menu → **Redeploy**.
+
+### Step 5 — Connect your devices
+1. Open the deployed app on your **laptop**. Go to **Settings**. Tap **"Generate a new sync code"**. You'll see something like `K4M2-N7Z9`. Copy it.
+2. Open the app on your **phone**. Go to **Settings**. Tap **"I already have a code from another device"**. Enter the code. Tap Connect.
+3. Done. Any change on either device shows on the other within ~1 second.
+
+### Security note
+Anyone with your sync code can read and edit your planner. The code is 8 random characters (~2.8 trillion combinations) so it's not guessable, but treat it like a password. Don't post it publicly. If you ever need to rotate it, tap **Disconnect** then **Generate a new code**.
 
 ---
 

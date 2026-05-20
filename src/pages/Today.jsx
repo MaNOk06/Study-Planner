@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Calendar, Clock, AlertTriangle, CheckCircle2, Flame, BookOpen, Settings as SettingsIcon } from 'lucide-react'
+import { Calendar, Clock, AlertTriangle, CheckCircle2, Flame, BookOpen, Settings as SettingsIcon, Cloud, CloudOff } from 'lucide-react'
 import { useStore } from '../lib/store'
 import { getTodayFocus, getOverdue, getTodaysReadings, weeklyStats, reasonForFocus } from '../lib/focus'
 import { COURSES, C } from '../lib/constants'
@@ -8,7 +8,7 @@ import { StatCard, EmptyState, SectionHeader } from '../components/Shared'
 import ItemCard from '../components/ItemCard'
 
 export default function Today({ onEdit, onAddNew, onImportPdf, onOpenSettings }) {
-  const { items, prefs } = useStore()
+  const { items, prefs, syncCode, syncStatus, isSyncConfigured } = useStore()
 
   const focus = useMemo(() => getTodayFocus(items, prefs.hoursPerDay, 5), [items, prefs.hoursPerDay])
   const overdue = useMemo(() => getOverdue(items), [items])
@@ -30,7 +30,19 @@ export default function Today({ onEdit, onAddNew, onImportPdf, onOpenSettings })
           }}>Y2 · Semester 2</p>
           <button onClick={onOpenSettings} aria-label="Settings" style={{
             color: C.NAVY, padding: 4, opacity: 0.6,
+            display: 'flex', alignItems: 'center', gap: 8,
           }}>
+            {isSyncConfigured && (
+              <span title={syncCode ? `Sync: ${syncStatus}` : 'Tap to set up sync'} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                fontSize: 11, fontWeight: 600,
+                color: syncCode
+                  ? (syncStatus === 'error' ? C.RED : syncStatus === 'idle' ? C.GREEN : C.GOLD)
+                  : C.MUTED,
+              }}>
+                {syncCode ? <Cloud size={13}/> : <CloudOff size={13}/>}
+              </span>
+            )}
             <SettingsIcon size={18} />
           </button>
         </div>
